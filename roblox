@@ -1,0 +1,64 @@
+-EffectSettings = { -- Settings
+UseRecommendedSettings = true
+-- If above is true you wont need to change the settings below.
+-- and the default settings will be used.
+-- if above is false you will need to change the settings below.
+ 
+-- Note:    I no longer support exploits. If it works for it, good for you but if it dosnt it wont get fixed.
+--          If you want to make it exploit compadable, go ahead use the code. Give credit tho.
+ 
+,SunRaySettings = {
+    enabled = false 
+    ,intensity = 0
+    ,spread = 0
+}
+,BloomSettings = {
+    enabled = false 
+    ,intensity = 0
+    ,size = 0
+    ,threshold = 0
+}   
+,ColorSettings = {
+    enabled = false 
+    ,brightness = 0
+    ,contrast = 0
+    ,saturation = 0
+    ,tintcolor = Color3.fromRGB(0,0,0)
+    --                  (red, green, blue)
+}
+,BlurSettings = {
+    enabled = false
+    ,size = 0
+}
+,TerrainSettings = {
+    Terrain = {
+        -- Better Water v1
+        enabled = false
+        ,color = Color3.fromRGB(0,0,0)
+        --              (red, green, blue)
+        ,reflectance = 0
+        ,transparency = 0
+        ,wavesize = 0
+        ,wavespeed = 0
+    },
+    WaterCamera = {
+        -- Underwater cam
+        camenabled = false
+        ,camcolor = Color3.fromRGB(0,0,0)
+        --                  (red, green, blue)
+        
+        ,blurenabled = false
+        ,blursize = 0
+        
+        ,sunrayenabled = false
+        ,sunrayIntensitiy = 0
+        ,sunraySpread = 0
+    }
+}
+}
+-- Script below! Do not edit!
+local ScreenGui = Instance.new("ScreenGui") local Frame = Instance.new("Frame") local TextLabel = Instance.new("TextLabel") ScreenGui.Name = "Display"Frame.Parent = ScreenGui Frame.BackgroundColor3 = Color3.new(1, 1, 1) Frame.BackgroundTransparency = 1 Frame.Position = UDim2.new(1, -100, 1, -100) Frame.Size = UDim2.new(0, 100, 0, 100) TextLabel.Parent = Frame TextLabel.BackgroundColor3 = Color3.new(1, 1, 1) TextLabel.BackgroundTransparency = 1 TextLabel.Position = UDim2.new(1.75, -200, 1.32000005, -50) TextLabel.Size = UDim2.new(0, 125, 0, 18) TextLabel.Font = Enum.Font.SourceSans TextLabel.Text = "Graphics Mod V1.0.0" TextLabel.TextColor3 = Color3.new(0, 0, 0) TextLabel.TextSize = 14 
+local val = pcall(function() ScreenGui.Parent = game.CoreGui end) if val == false then ScreenGui.Parent = game.Players.LocalPlayer.PlayerGui end
+local RecommendedSettings = {SunRaySettings = {enabled = true   ,intensity = 0.25,spread = 1},BloomSettings = {enabled = true,intensity = 0.65,size = 24,threshold = 0.915} ,ColorSettings = {enabled = true,brightness = 0,contrast = -0.1,saturation = 0,tintcolor = Color3.fromRGB(255,253,222)},BlurSettings = {enabled = false,size = 0}   ,TerrainSettings = {WaterCamera = {camenabled = true,camcolor = Color3.fromRGB(56, 119, 255),blurenabled = true,blursize = 13,sunrayenabled = true,sunrayIntensitiy = 0.634,sunraySpread = 1},}} if EffectSettings.UseRecommendedSettings == true then EffectSettings = RecommendedSettings end local security = EffectSettings.SecuritySettings local SunRays = Instance.new("SunRaysEffect",game:GetService("Lighting")) local BloomEffect = Instance.new("BloomEffect",game:GetService("Lighting")) local ColorCorrection = Instance.new("ColorCorrectionEffect",game:GetService("Lighting")) local BlurEffect = Instance.new("BlurEffect",game:GetService("Lighting")) SunRays.Enabled = EffectSettings.SunRaySettings.enabled SunRays.Intensity = EffectSettings.SunRaySettings.intensity SunRays.Spread = EffectSettings.SunRaySettings.spread BloomEffect.Enabled = EffectSettings.BloomSettings.enabled BloomEffect.Intensity = EffectSettings.BloomSettings.intensity BloomEffect.Size = EffectSettings.BloomSettings.size BloomEffect.Threshold = EffectSettings.BloomSettings.threshold BlurEffect.Enabled = EffectSettings.BlurSettings.enabled BlurEffect.Size = EffectSettings.BlurSettings.size ColorCorrection.Enabled = EffectSettings.ColorSettings.enabled ColorCorrection.Brightness = EffectSettings.ColorSettings.brightness ColorCorrection.Contrast = EffectSettings.ColorSettings.contrast ColorCorrection.Saturation = EffectSettings.ColorSettings.saturation ColorCorrection.TintColor = EffectSettings.ColorSettings.tintcolor
+spawn(function() local cam = workspace.CurrentCamera local terrain = workspace.Terrain local offset = 0.01 local lighting = game:GetService("Lighting") local bloom = lighting:WaitForChild("Bloom") local ColorCorrection = lighting:WaitForChild("ColorCorrection") local blur = lighting:WaitForChild("Blur") local sunray = lighting:WaitForChild("SunRays") local effects = EffectSettings local IsInWater = false if effects.TerrainSettings.WaterCamera.camenabled == true then while wait() do local pos = cam.CFrame.Position local min = Vector3.new(pos.X + offset,pos.Y + offset, pos.Z + offset) local max = Vector3.new(pos.X - offset,pos.Y - offset, pos.Z - offset) local region = Region3.new(max, min) region = region:ExpandToGrid(4) if region then local material = game.Workspace.Terrain:ReadVoxels(region, 4) if material[1][1][1] == Enum.Material.Water then if IsInWater == false then IsInWater = true if effects.TerrainSettings.WaterCamera.blurenabled == true then blur.Enabled = effects.TerrainSettings.WaterCamera.blurenabled blur.Size = effects.TerrainSettings.WaterCamera.blursize end if effects.TerrainSettings.WaterCamera.sunrayenabled == true then sunray.Enabled = effects.TerrainSettings.WaterCamera.sunrayenabled sunray.Intensity = effects.TerrainSettings.WaterCamera.sunrayIntensitiy sunray.Spread = effects.TerrainSettings.WaterCamera.sunraySpread end ColorCorrection.Enabled = effects.TerrainSettings.WaterCamera.camenabled ColorCorrection.TintColor = effects.TerrainSettings.WaterCamera.camcolor end else if IsInWater == true then IsInWater = false sunray.Enabled = effects.SunRaySettings.enabled sunray.Intensity = effects.SunRaySettings.intensity sunray.Spread = effects.SunRaySettings.spread bloom.Enabled = effects.BloomSettings.enabled bloom.Intensity = effects.BloomSettings.intensity bloom.Size = effects.BloomSettings.size bloom.Threshold = effects.BloomSettings.threshold blur.Enabled = effects.BlurSettings.enabled blur.Size = effects.BlurSettings.size ColorCorrection.Enabled = effects.ColorSettings.enabled ColorCorrection.Brightness = effects.ColorSettings.brightness ColorCorrection.Contrast = effects.ColorSettings.contrast ColorCorrection.Saturation = effects.ColorSettings.saturation ColorCorrection.TintColor = effects.ColorSettings.tintcolor    end  end end end end end)
+    
